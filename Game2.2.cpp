@@ -179,30 +179,38 @@ public:
 		};
 	};
 
-	void collidePlayerWithWall(sf::CircleShape * myPlayer, sf::Vector2f * movement)
+	void collidePlayerWithWall(sf::CircleShape *myPlayer, sf::Vector2f * movement)
 	{
 		sf::Vector2f pos = myPlayer->getPosition();
-		float r = 15;
+		float r = myPlayer->getRadius();
+
 		if (pos.x + 2 * r >= position.x and pos.x <= position.x + x)
+		{
+			if (pos.y + r >= position.y and pos.y + r <= position.y + y)
+			{
+				if (DangerouslyClose(pos.x + 2 * r, position.x, r) and movement->x > 0)
+				{
+					movement->x = 0;
+				};
+
+				if (DangerouslyClose(pos.x, position.x + x, r) and movement->x < 0)
+				{
+					movement->x = 0;
+				};
+
+			};
+		};
+		
+		if (pos.x + r >= position.x and pos.x + r <= position.x + x)
 		{
 			if (pos.y + 2 * r >= position.y and pos.y <= position.y + y)
 			{
-				if (DangerouslyClose(pos.x + 2*r, position.x, 15) and movement->x > 0)
-				{
-					movement->x = 0;
-				};
-
-				if (DangerouslyClose(pos.x, position.x + x, 15) and movement->x < 0)
-				{
-					movement->x = 0;
-				};
-
-				if (DangerouslyClose(pos.y + 2*r, position.y, 15) and movement->y > 0)
+				if (DangerouslyClose(pos.y + 2*r, position.y, r) and movement->y > 0)
 				{
 					movement->y = 0;
 				};
 
-				if (DangerouslyClose(pos.y, position.y + y, 15) and movement->y < 0)
+				if (DangerouslyClose(pos.y, position.y + y, r) and movement->y < 0)
 				{
 					movement->y = 0;
 				};
