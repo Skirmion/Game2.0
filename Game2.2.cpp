@@ -231,6 +231,61 @@ public:
 	};
 };
 
+struct Health
+{
+public:
+
+	int health;
+
+	Health()
+	{
+		health = 0;
+	}
+
+	Health(int health)
+	{
+		this->health = health;
+	}
+
+	void drawHealth(sf::RenderWindow* myWindow, int x, int y, int sleep)
+	{
+		sf::RectangleShape rectangle1(sf::Vector2f(8, 5));
+		sf::RectangleShape rectangle2(sf::Vector2f(8, 5));
+		sf::RectangleShape rectangle3(sf::Vector2f(8, 5));
+
+		sf::RectangleShape rectangle4(sf::Vector2f(30 - sleep, 5));
+
+		rectangle1.setFillColor(sf::Color(0, 255, 0));
+		rectangle2.setFillColor(sf::Color(0, 255, 0));
+		rectangle3.setFillColor(sf::Color(0, 255, 0));
+
+		rectangle4.setFillColor(sf::Color(101, 67, 33));
+
+		if (health == 2)
+		{
+			rectangle1.setFillColor(sf::Color(255, 0, 0));
+		};
+
+		if (health == 1)
+		{
+			rectangle1.setFillColor(sf::Color(255, 0, 0));
+			rectangle2.setFillColor(sf::Color(255, 0, 0));
+		};
+
+		rectangle1.setPosition(x - 1, y - 10);
+		rectangle2.setPosition(x + 10, y - 10);
+		rectangle3.setPosition(x + 21, y - 10);
+
+		rectangle4.setPosition(x - 1, y - 20);
+
+		myWindow->draw(rectangle1);
+		myWindow->draw(rectangle2);
+		myWindow->draw(rectangle3);
+
+		myWindow->draw(rectangle4);
+	};
+};
+
 
 
 class Game
@@ -247,7 +302,7 @@ private:
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 	void gameOver(int one);
 	void repeat();
-	void health(int, int, int, int, int);
+	void myHealth(int, int, Health, int, int);
 	void updateBullet();
 	void poolBullet();
 private:
@@ -258,8 +313,9 @@ private:
 
 	sf::Vector2f movement1; sf::Vector2f movement2;
 	Sphere spheres1[10]; Sphere spheres2[10];
+	Health healthplayer1; Health healthplayer2;
 
-	int i = 0; int g = 0; float t = 0.1; int gv = 1; int sleepgun1 = 0; int sleepgun2 = 0; int numberwall = 22; int numberbullet = 10; int health1 = 3; int health2 = 3;
+	int i = 0; int g = 0; float t = 0.1; int gv = 1; int sleepgun1 = 0; int sleepgun2 = 0; int numberwall = 22; int numberbullet = 10;
 
 	string direction1 = { 0,0 }; string direction2 = { 0,0 };
 	
@@ -279,6 +335,9 @@ Game::Game() : myWindow(sf::VideoMode(1920, 1080), "myWindow"), myPlayer1(), myP
 	myPlayer2.setPosition(1840.f, 50.f);
 
 	poolBullet();
+
+	healthplayer1.health = 3;
+	healthplayer2.health = 3;
 
 	for (int m = 0; m < numberwall; m++)
 	{
@@ -390,11 +449,11 @@ void Game::updateBullet()
 
 		sf::Vector2f poss2(0.f, 0.f);
 		poss2 = myPlayer2.getPosition();
-		if (spheres1[j].ballsDangerouslyClose(poss2.x + 15, poss2.y + 15)) { health2 -= 1;  spheres1[j] = { {-100.f, -100.f} , {0.f, 0.f},  {0, 0}, 10, 0, 0, 255, 10 }; };
+		if (spheres1[j].ballsDangerouslyClose(poss2.x + 15, poss2.y + 15)) { healthplayer2.health -= 1;  spheres1[j] = { {-100.f, -100.f} , {0.f, 0.f},  {0, 0}, 10, 0, 0, 255, 10 }; };
 
 		sf::Vector2f poss1(0.f, 0.f);
 		poss1 = myPlayer1.getPosition();
-		if (spheres2[j].ballsDangerouslyClose(poss1.x + 15, poss1.y + 15)) { health1 -= 1; spheres2[j] = { {-100.f, -100.f} , {0.f, 0.f},  {0, 0}, 10, 0, 0, 255, 10 }; };
+		if (spheres2[j].ballsDangerouslyClose(poss1.x + 15, poss1.y + 15)) { healthplayer1.health -= 1; spheres2[j] = { {-100.f, -100.f} , {0.f, 0.f},  {0, 0}, 10, 0, 0, 255, 10 }; };
 	};
 };
 
@@ -414,8 +473,8 @@ void Game::render()
 		edgemap[a].drawWall(&myWindow);
 	};
     
-	health(pos1.x, pos1.y, health1, 0, sleepgun1);
-	health(pos2.x, pos2.y, health2, 1, sleepgun2);
+	myHealth(pos1.x, pos1.y, healthplayer1, sleepgun1, 0);
+	myHealth(pos2.x, pos2.y, healthplayer2, sleepgun2, 1);
 
 	for (int j = 0; j < numberbullet; j++)
 	{
@@ -466,37 +525,16 @@ void Game::repeat()
 	myPlayer1.setPosition(60.f, 990.f);
 	myPlayer2.setPosition(1840.f, 50.f);
 
-	health1 = 3; health2 = 3;
+	healthplayer1.health = 3; healthplayer2.health = 3;
 	gv = 1;
 };
 
 
-void Game::health(int x, int y, int health, int player, int sleep)
+void Game::myHealth(int x, int y, Health health, int sleep, int player)
 {
-	sf::RectangleShape rectangle1(sf::Vector2f(8, 5));
-	sf::RectangleShape rectangle2(sf::Vector2f(8, 5));
-	sf::RectangleShape rectangle3(sf::Vector2f(8, 5));
+	health.drawHealth(&myWindow, x, y, sleep);
 
-	sf::RectangleShape rectangle4(sf::Vector2f(30 - sleep, 5));
-
-	rectangle1.setFillColor(sf::Color(0, 255, 0));
-	rectangle2.setFillColor(sf::Color(0, 255, 0));
-	rectangle3.setFillColor(sf::Color(0, 255, 0));
-
-	rectangle4.setFillColor(sf::Color(101, 67, 33));
-
-	if (health == 2)
-	{
-		rectangle1.setFillColor(sf::Color(255, 0, 0));
-	};
-
-	if (health == 1)
-	{
-		rectangle1.setFillColor(sf::Color(255, 0, 0));
-		rectangle2.setFillColor(sf::Color(255, 0, 0));
-	};
-
-	if (health == 0)
+	if (health.health == 0)
 	{
 		if (player == 0)
 		{
@@ -508,18 +546,6 @@ void Game::health(int x, int y, int health, int player, int sleep)
 			gameOver(1);
 		};
 	};
-
-	rectangle1.setPosition(x - 1, y - 10);
-	rectangle2.setPosition(x + 10, y - 10);
-	rectangle3.setPosition(x + 21, y - 10);
-
-	rectangle4.setPosition(x - 1, y - 20);
-
-	myWindow.draw(rectangle1);
-	myWindow.draw(rectangle2);
-	myWindow.draw(rectangle3);
-
-	myWindow.draw(rectangle4);
 };
 
 void Game::poolBullet()
